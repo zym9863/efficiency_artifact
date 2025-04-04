@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import '../widgets/custom_markdown_builder.dart';
 import '../providers/settings_provider.dart';
 import '../services/gemini_service.dart';
 import '../widgets/prompt_list_widget.dart';
@@ -214,18 +215,30 @@ class _HomeScreenState extends State<HomeScreen> {
                                 child: MarkdownBody(
                                   data: _response,
                                   selectable: true,
+                                  builders: {
+                                    'code': CustomMarkdownBuilder(
+                                      context: context,
+                                      codeStyle: TextStyle(
+                                        fontFamily: 'monospace',
+                                        color: colorScheme.onSurfaceVariant,
+                                      ),
+                                      codeDecoration: BoxDecoration(
+                                        color: colorScheme.surfaceVariant,
+                                        borderRadius: BorderRadius.circular(4.0),
+                                        border: Border.all(color: colorScheme.outlineVariant),
+                                      ),
+                                    ),
+                                  },
                                   styleSheet: MarkdownStyleSheet.fromTheme(theme).copyWith(
-                                    codeblockPadding: const EdgeInsets.all(8.0), // 正确使用 codeblockPadding
+                                    codeblockPadding: const EdgeInsets.all(8.0),
                                     codeblockDecoration: BoxDecoration(
-                                      color: colorScheme.surfaceVariant, // 使用主题颜色
+                                      color: colorScheme.surfaceVariant,
                                       borderRadius: BorderRadius.circular(4.0),
-                                      border: Border.all(color: colorScheme.outlineVariant), // 使用主题颜色
-                                      // 移除 decoration 内部的 padding
+                                      border: Border.all(color: colorScheme.outlineVariant),
                                     ),
                                     code: TextStyle(
-                                      backgroundColor: colorScheme.surfaceVariant, // 使用主题颜色
                                       fontFamily: 'monospace',
-                                      color: colorScheme.onSurfaceVariant, // 确保文本可读
+                                      color: colorScheme.onSurfaceVariant,
                                     ),
                                     h1: theme.textTheme.headlineMedium,
                                     h2: theme.textTheme.titleLarge,

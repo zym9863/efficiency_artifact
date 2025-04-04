@@ -62,5 +62,6 @@ lib/
 ├── services/            # 服务
 │   └── gemini_service.dart
 └── widgets/            # 组件
+    ├── custom_markdown_builder.dart
     └── prompt_list_widget.dart
 ```
