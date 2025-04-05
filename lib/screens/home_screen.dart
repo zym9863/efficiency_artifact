@@ -207,6 +207,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                     tooltip: '复制内容',
                                     onPressed: _response.isEmpty ? null : () => _copyToClipboard(_response),
                                   ),
+                                  IconButton(
+                                    icon: const Icon(Icons.select_all),
+                                    tooltip: '选择文本',
+                                    onPressed: _response.isEmpty ? null : () => _showTextSelection(_response),
+                                  ),
                                 ],
                               ),
                             ),
@@ -298,6 +303,24 @@ class _HomeScreenState extends State<HomeScreen> {
     await Clipboard.setData(ClipboardData(text: text));
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('内容已复制到剪贴板')),
+    );
+  }
+
+  void _showTextSelection(String text) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('选择文本'),
+        content: SingleChildScrollView(
+          child: SelectableText(text),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('关闭'),
+          ),
+        ],
+      ),
     );
   }
 
