@@ -82,6 +82,50 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 );
               },
             ),
+            const SizedBox(height: 24),
+            const Text(
+              '主题设置',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
+            Consumer<SettingsProvider>(
+              builder: (context, provider, child) {
+                return Column(
+                  children: [
+                    RadioListTile<ThemeMode>(
+                      title: const Text('跟随系统'),
+                      value: ThemeMode.system,
+                      groupValue: provider.themeMode,
+                      onChanged: (value) {
+                        if (value != null) {
+                          provider.updateThemeMode(value);
+                        }
+                      },
+                    ),
+                    RadioListTile<ThemeMode>(
+                      title: const Text('浅色主题'),
+                      value: ThemeMode.light,
+                      groupValue: provider.themeMode,
+                      onChanged: (value) {
+                        if (value != null) {
+                          provider.updateThemeMode(value);
+                        }
+                      },
+                    ),
+                    RadioListTile<ThemeMode>(
+                      title: const Text('深色主题'),
+                      value: ThemeMode.dark,
+                      groupValue: provider.themeMode,
+                      onChanged: (value) {
+                        if (value != null) {
+                          provider.updateThemeMode(value);
+                        }
+                      },
+                    ),
+                  ],
+                );
+              },
+            ),
           ],
         ),
       ),
