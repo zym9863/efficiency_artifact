@@ -52,6 +52,7 @@ lib/
 ├── main.dart            # 应用入口
 ├── models/              # 数据模型
 │   ├── gemini_model.dart
+│   ├── openrouter_model.dart
 │   └── prompt_model.dart
 ├── providers/           # 状态管理
 │   ├── prompt_provider.dart
@@ -60,7 +61,8 @@ lib/
 │   ├── home_screen.dart
 │   └── settings_screen.dart
 ├── services/            # 服务
-│   └── gemini_service.dart
+│   ├── gemini_service.dart
+│   └── openrouter_service.dart
 └── widgets/            # 组件
     ├── custom_markdown_builder.dart
     └── prompt_list_widget.dart

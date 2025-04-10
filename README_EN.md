@@ -52,6 +52,7 @@ lib/
 ├── main.dart            # Application entry
 ├── models/              # Data models
 │   ├── gemini_model.dart
+│   ├── openrouter_model.dart
 │   └── prompt_model.dart
 ├── providers/           # State management
 │   ├── prompt_provider.dart
@@ -60,7 +61,8 @@ lib/
 │   ├── home_screen.dart
 │   └── settings_screen.dart
 ├── services/            # Services
-│   └── gemini_service.dart
+│   ├── gemini_service.dart
+│   └── openrouter_service.dart
 └── widgets/            # Components
     ├── custom_markdown_builder.dart
     └── prompt_list_widget.dart
