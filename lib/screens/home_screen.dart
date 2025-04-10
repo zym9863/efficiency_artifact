@@ -26,8 +26,10 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    // Initialize both services using the provider from initState
     final settingsProvider = Provider.of<SettingsProvider>(context, listen: false);
     _geminiService = GeminiService(settings: settingsProvider.settings);
+    _openrouterService = OpenRouterService(settings: settingsProvider.openrouterSettings);
   }
 
   @override
@@ -44,42 +46,44 @@ class _HomeScreenState extends State<HomeScreen> {
 
     setState(() {
       _isLoading = true;
+      _response = ''; // Clear previous response
     });
 
-    // 更新服务实例以获取最新设置
     final settingsProvider = Provider.of<SettingsProvider>(context, listen: false);
+    // Ensure services have the latest settings (though usually initialized once is enough unless settings change mid-session without restart)
     _geminiService = GeminiService(settings: settingsProvider.settings);
     _openrouterService = OpenRouterService(settings: settingsProvider.openrouterSettings);
 
     try {
-      // 优先使用Gemini API
-      try {
-        final response = await _geminiService.sendMessage(
+      String response;
+      if (settingsProvider.selectedApiType == ApiType.gemini) {
+        if (settingsProvider.settings.apiKey.isEmpty) {
+          throw Exception('Gemini API 密钥未设置。请在设置中添加。');
+        }
+        response = await _geminiService.sendMessage(
           input,
           systemPrompt: _selectedSystemPrompt,
         );
-        setState(() {
-          _response = response;
-          _isLoading = false;
-        });
-      } catch (geminiError) {
-        // 如果Gemini API调用失败且OpenRouter API密钥已配置，尝试使用OpenRouter服务
-        if (settingsProvider.openrouterSettings.apiKey.isNotEmpty) {
-          final response = await _openrouterService.sendMessage(
-            input,
-            systemPrompt: _selectedSystemPrompt,
-          );
-          setState(() {
-            _response = response;
-            _isLoading = false;
-          });
-        } else {
-          throw geminiError; // 如果OpenRouter也不可用，抛出原始错误
+      } else { // ApiType.openrouter
+        if (settingsProvider.openrouterSettings.apiKey.isEmpty) {
+          throw Exception('OpenRouter API 密钥未设置。请在设置中添加。');
         }
+        response = await _openrouterService.sendMessage(
+          input,
+          systemPrompt: _selectedSystemPrompt,
+        );
       }
+
+      setState(() {
+        _response = response;
+      });
     } catch (e) {
       setState(() {
-        _response = '发生错误: $e';
+        // Improve error display
+        _response = '请求失败: ${e.toString().replaceFirst("Exception: ", "")}';
+      });
+    } finally {
+      setState(() {
         _isLoading = false;
       });
     }
@@ -216,10 +220,18 @@ class _HomeScreenState extends State<HomeScreen> {
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  IconButton(
-                                    icon: const Icon(Icons.refresh),
-                                    tooltip: '重新生成',
-                                    onPressed: _isLoading ? null : _regenerateResponse,
+                                  // Access provider within the build method's context for the condition
+                                  Consumer<SettingsProvider>( // Use Consumer here for reactivity if needed, or Provider.of
+                                    builder: (context, settingsProviderInstance, _) {
+                                      return IconButton(
+                                        icon: const Icon(Icons.refresh),
+                                        tooltip: '重新生成 (仅限Gemini)',
+                                        // Disable regenerate if not Gemini or loading
+                                        onPressed: (_isLoading || settingsProviderInstance.selectedApiType != ApiType.gemini)
+                                            ? null
+                                            : _regenerateResponse,
+                                      );
+                                    }
                                   ),
                                   IconButton(
                                     icon: const Icon(Icons.copy),
@@ -345,19 +357,41 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // 重新生成回答
   Future<void> _regenerateResponse() async {
+    final settingsProvider = Provider.of<SettingsProvider>(context, listen: false);
+
+    // Only allow regeneration for Gemini
+    if (settingsProvider.selectedApiType != ApiType.gemini) {
+       ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('重新生成功能仅支持 Gemini API。')),
+      );
+      return;
+    }
+
+     if (_isLoading) return; // Prevent multiple requests
+
     setState(() {
       _isLoading = true;
+      _response = ''; // Clear previous response
     });
 
+    // Ensure service has latest settings
+     _geminiService = GeminiService(settings: settingsProvider.settings);
+
     try {
+      // Check if API key is set before regenerating
+       if (settingsProvider.settings.apiKey.isEmpty) {
+          throw Exception('Gemini API 密钥未设置。请在设置中添加。');
+        }
       final response = await _geminiService.regenerateResponse();
       setState(() {
         _response = response;
-        _isLoading = false;
       });
     } catch (e) {
       setState(() {
-        _response = '发生错误: $e';
+         _response = '重新生成失败: ${e.toString().replaceFirst("Exception: ", "")}';
+      });
+    } finally {
+       setState(() {
         _isLoading = false;
       });
     }

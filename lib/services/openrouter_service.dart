@@ -48,10 +48,21 @@ class OpenRouterService {
       );
 
       if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        return data['choices'][0]['message']['content'];
+        // Explicitly decode response body as UTF-8 before JSON decoding
+        final responseBody = utf8.decode(response.bodyBytes);
+        final data = jsonDecode(responseBody);
+        // Check if the expected structure exists
+        if (data != null && data['choices'] is List && data['choices'].isNotEmpty &&
+            data['choices'][0]['message'] is Map && data['choices'][0]['message']['content'] != null) {
+          return data['choices'][0]['message']['content'];
+        } else {
+          // Handle unexpected response structure
+          return '请求成功，但响应格式不符合预期: $responseBody';
+        }
       } else {
-        return '请求失败: ${response.statusCode} - ${response.body}';
+         // Decode error body as UTF-8 as well for better error messages
+        final errorBody = utf8.decode(response.bodyBytes);
+        return '请求失败: ${response.statusCode} - $errorBody';
       }
     } catch (e) {
       return '发生错误: $e';
