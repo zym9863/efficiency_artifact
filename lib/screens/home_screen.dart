@@ -5,6 +5,7 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import '../widgets/custom_markdown_builder.dart';
 import '../providers/settings_provider.dart';
 import '../services/gemini_service.dart';
+import '../services/openrouter_service.dart';
 import '../widgets/prompt_list_widget.dart';
 import 'settings_screen.dart';
 
@@ -20,6 +21,7 @@ class _HomeScreenState extends State<HomeScreen> {
   String _response = '';
   bool _isLoading = false;
   late GeminiService _geminiService;
+  late OpenRouterService _openrouterService;
 
   @override
   void initState() {
@@ -47,17 +49,34 @@ class _HomeScreenState extends State<HomeScreen> {
     // 更新服务实例以获取最新设置
     final settingsProvider = Provider.of<SettingsProvider>(context, listen: false);
     _geminiService = GeminiService(settings: settingsProvider.settings);
+    _openrouterService = OpenRouterService(settings: settingsProvider.openrouterSettings);
 
     try {
-      // 使用系统提示词（如果有）和用户输入一起发送
-      final response = await _geminiService.sendMessage(
-        input, 
-        systemPrompt: _selectedSystemPrompt
-      );
-      setState(() {
-        _response = response;
-        _isLoading = false;
-      });
+      // 优先使用Gemini API
+      try {
+        final response = await _geminiService.sendMessage(
+          input,
+          systemPrompt: _selectedSystemPrompt,
+        );
+        setState(() {
+          _response = response;
+          _isLoading = false;
+        });
+      } catch (geminiError) {
+        // 如果Gemini API调用失败且OpenRouter API密钥已配置，尝试使用OpenRouter服务
+        if (settingsProvider.openrouterSettings.apiKey.isNotEmpty) {
+          final response = await _openrouterService.sendMessage(
+            input,
+            systemPrompt: _selectedSystemPrompt,
+          );
+          setState(() {
+            _response = response;
+            _isLoading = false;
+          });
+        } else {
+          throw geminiError; // 如果OpenRouter也不可用，抛出原始错误
+        }
+      }
     } catch (e) {
       setState(() {
         _response = '发生错误: $e';

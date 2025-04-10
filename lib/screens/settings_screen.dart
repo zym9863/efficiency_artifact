@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/gemini_model.dart';
+import '../models/openrouter_model.dart';
 import '../providers/settings_provider.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -12,6 +13,7 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   final _apiKeyController = TextEditingController();
+  final _openrouterApiKeyController = TextEditingController();
   late SettingsProvider _settingsProvider;
 
   @override
@@ -19,6 +21,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     super.initState();
     _settingsProvider = Provider.of<SettingsProvider>(context, listen: false);
     _apiKeyController.text = _settingsProvider.settings.apiKey;
+    _openrouterApiKeyController.text = _settingsProvider.openrouterSettings.apiKey;
   }
 
   @override
@@ -51,35 +54,69 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 border: OutlineInputBorder(),
                 hintText: '请输入您的Gemini API密钥',
               ),
-              onChanged: (value) async {
-                await _settingsProvider.updateApiKey(value);
+              onChanged: (value) {
+                _settingsProvider.updateApiKey(value);
               },
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 16),
+            DropdownButtonFormField<String>(
+              value: _settingsProvider.settings.selectedModel.id,
+              decoration: const InputDecoration(
+                labelText: '选择Gemini模型',
+                border: OutlineInputBorder(),
+              ),
+              items: GeminiModel.getAvailableModels()
+                  .map((model) => DropdownMenuItem(
+                        value: model.id,
+                        child: Text(model.name),
+                      ))
+                  .toList(),
+              onChanged: (String? value) {
+                if (value != null) {
+                  final model = GeminiModel.getAvailableModels()
+                      .firstWhere((model) => model.id == value);
+                  _settingsProvider.updateSelectedModel(model);
+                }
+              },
+            ),
+            const SizedBox(height: 32),
+            
+            // OpenRouter API设置
             const Text(
-              '模型选择',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              'OpenRouter API设置',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: _openrouterApiKeyController,
+              decoration: const InputDecoration(
+                labelText: 'OpenRouter API密钥',
+                hintText: '在此输入OpenRouter API密钥',
+                border: OutlineInputBorder(),
+              ),
+              onChanged: (value) {
+                _settingsProvider.updateOpenRouterApiKey(value);
+              },
             ),
             const SizedBox(height: 16),
-            Consumer<SettingsProvider>(
-              builder: (context, provider, child) {
-                return Column(
-                  children: GeminiModel.getAvailableModels().map((model) {
-                    return RadioListTile<String>(
-                      title: Text(model.name),
-                      subtitle: Text(model.id),
-                      value: model.id,
-                      groupValue: provider.settings.selectedModel.id,
-                      onChanged: (value) {
-                        if (value != null) {
-                          final selectedModel = GeminiModel.getAvailableModels()
-                              .firstWhere((m) => m.id == value);
-                          provider.updateSelectedModel(selectedModel);
-                        }
-                      },
-                    );
-                  }).toList(),
-                );
+            DropdownButtonFormField<String>(
+              value: _settingsProvider.openrouterSettings.selectedModel.id,
+              decoration: const InputDecoration(
+                labelText: '选择OpenRouter模型',
+                border: OutlineInputBorder(),
+              ),
+              items: OpenRouterModel.getAvailableModels()
+                  .map((model) => DropdownMenuItem(
+                        value: model.id,
+                        child: Text('${model.name} (${model.provider})'),
+                      ))
+                  .toList(),
+              onChanged: (String? value) {
+                if (value != null) {
+                  final model = OpenRouterModel.getAvailableModels()
+                      .firstWhere((model) => model.id == value);
+                  _settingsProvider.updateOpenRouterSelectedModel(model);
+                }
               },
             ),
             const SizedBox(height: 24),
