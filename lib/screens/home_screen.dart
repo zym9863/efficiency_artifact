@@ -50,12 +50,15 @@ class _HomeScreenState extends State<HomeScreen> {
     });
 
     final settingsProvider = Provider.of<SettingsProvider>(context, listen: false);
-    // Ensure services have the latest settings (though usually initialized once is enough unless settings change mid-session without restart)
-    _geminiService = GeminiService(settings: settingsProvider.settings);
-    _openrouterService = OpenRouterService(settings: settingsProvider.openrouterSettings);
+    // Use the existing service instances initialized in initState
+    // _geminiService = GeminiService(settings: settingsProvider.settings); // REMOVED
+    // _openrouterService = OpenRouterService(settings: settingsProvider.openrouterSettings); // REMOVED
 
     try {
       String response;
+      // Ensure the correct service instance has the latest settings if they could change
+      // For simplicity now, we assume settings are relatively stable or handled by navigation/restart
+      // A more robust solution might involve updating settings within the existing service instance.
       if (settingsProvider.selectedApiType == ApiType.gemini) {
         if (settingsProvider.settings.apiKey.isEmpty) {
           throw Exception('Gemini API 密钥未设置。请在设置中添加。');
@@ -221,17 +224,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   // Access provider within the build method's context for the condition
-                                  Consumer<SettingsProvider>( // Use Consumer here for reactivity if needed, or Provider.of
-                                    builder: (context, settingsProviderInstance, _) {
-                                      return IconButton(
-                                        icon: const Icon(Icons.refresh),
-                                        tooltip: '重新生成 (仅限Gemini)',
-                                        // Disable regenerate if not Gemini or loading
-                                        onPressed: (_isLoading || settingsProviderInstance.selectedApiType != ApiType.gemini)
-                                            ? null
-                                            : _regenerateResponse,
-                                      );
-                                    }
+                                  // 重新生成按钮 - 现在支持两种 API
+                                  IconButton(
+                                    icon: const Icon(Icons.refresh),
+                                    tooltip: '重新生成',
+                                    // 禁用条件：正在加载中
+                                    onPressed: _isLoading ? null : _regenerateResponse,
                                   ),
                                   IconButton(
                                     icon: const Icon(Icons.copy),
@@ -355,43 +353,43 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // 重新生成回答
+  // 重新生成回答 - 支持 Gemini 和 OpenRouter
   Future<void> _regenerateResponse() async {
-    final settingsProvider = Provider.of<SettingsProvider>(context, listen: false);
-
-    // Only allow regeneration for Gemini
-    if (settingsProvider.selectedApiType != ApiType.gemini) {
-       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('重新生成功能仅支持 Gemini API。')),
-      );
-      return;
-    }
-
-     if (_isLoading) return; // Prevent multiple requests
+    if (_isLoading) return; // 防止重复请求
 
     setState(() {
       _isLoading = true;
-      _response = ''; // Clear previous response
+      _response = ''; // 清除之前的响应
     });
 
-    // Ensure service has latest settings
-     _geminiService = GeminiService(settings: settingsProvider.settings);
+    final settingsProvider = Provider.of<SettingsProvider>(context, listen: false);
+    String response;
 
     try {
-      // Check if API key is set before regenerating
-       if (settingsProvider.settings.apiKey.isEmpty) {
+      // Use the existing service instances initialized in initState
+      if (settingsProvider.selectedApiType == ApiType.gemini) {
+        // _geminiService = GeminiService(settings: settingsProvider.settings); // REMOVED
+        if (settingsProvider.settings.apiKey.isEmpty) {
           throw Exception('Gemini API 密钥未设置。请在设置中添加。');
         }
-      final response = await _geminiService.regenerateResponse();
+        response = await _geminiService.regenerateResponse();
+      } else { // ApiType.openrouter
+        // _openrouterService = OpenRouterService(settings: settingsProvider.openrouterSettings); // REMOVED
+         if (settingsProvider.openrouterSettings.apiKey.isEmpty) {
+          throw Exception('OpenRouter API 密钥未设置。请在设置中添加。');
+        }
+        response = await _openrouterService.regenerateResponse();
+      }
+
       setState(() {
         _response = response;
       });
     } catch (e) {
       setState(() {
-         _response = '重新生成失败: ${e.toString().replaceFirst("Exception: ", "")}';
+        _response = '重新生成失败: ${e.toString().replaceFirst("Exception: ", "")}';
       });
     } finally {
-       setState(() {
+      setState(() {
         _isLoading = false;
       });
     }
