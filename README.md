@@ -14,6 +14,7 @@
   - 集成OpenRouter API，支持多种模型
     - Gemini 2.5 Pro (Google)
     - DeepSeek V3 (DeepSeek)
+    - Optimus Alpha (OpenRouter)
 - 提示词管理系统
   - 支持创建和保存常用提示词
   - 提示词标题和内容管理

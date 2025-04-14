@@ -14,6 +14,7 @@ A Flutter-based AI efficiency tool that integrates both Gemini and OpenRouter AP
   - OpenRouter API Integration with Various Models
     - Gemini 2.5 Pro (Google)
     - DeepSeek V3 (DeepSeek)
+    - Optimus Alpha (OpenRouter)
 - Prompt Management System
   - Create and save frequently used prompts
   - Manage prompt titles and content
