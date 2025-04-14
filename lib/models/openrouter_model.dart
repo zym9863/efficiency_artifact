@@ -21,6 +21,11 @@ class OpenRouterModel {
         name: 'DeepSeek V3',
         provider: 'DeepSeek',
       ),
+      OpenRouterModel(
+        id: 'openrouter/optimus-alpha',
+        name: 'Optimus Alpha',
+        provider: 'OpenRouter', 
+      )
     ];
   }
 }
