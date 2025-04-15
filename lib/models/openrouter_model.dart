@@ -20,11 +20,6 @@ class OpenRouterModel {
         id: 'deepseek/deepseek-chat-v3-0324:free',
         name: 'DeepSeek V3',
         provider: 'DeepSeek',
-      ),
-      OpenRouterModel(
-        id: 'openrouter/optimus-alpha',
-        name: 'Optimus Alpha',
-        provider: 'OpenRouter', 
       )
     ];
   }
