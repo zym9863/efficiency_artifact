@@ -14,6 +14,7 @@
   - 集成OpenRouter API，支持多种模型
     - Gemini 2.5 Pro (Google)
     - DeepSeek V3 (DeepSeek)
+  - 集成Pollinations API（无需API Key，支持openai-large模型）
 - 提示词管理系统
   - 支持创建和保存常用提示词
   - 提示词标题和内容管理
@@ -37,7 +38,7 @@
 - 多API提供商无缝切换
 - 本地数据持久化（SharedPreferences）
 - 模块化架构设计
-  - services：API服务封装
+  - services：API服务封装（Gemini、OpenRouter、Pollinations）
   - models：数据模型定义
   - providers：状态管理
   - screens：页面UI
@@ -74,7 +75,8 @@ lib/
 │   └── settings_screen.dart
 ├── services/            # 服务
 │   ├── gemini_service.dart
-│   └── openrouter_service.dart
+│   ├── openrouter_service.dart
+│   └── pollinations_service.dart
 └── widgets/            # 组件
     ├── custom_markdown_builder.dart
     └── prompt_list_widget.dart
