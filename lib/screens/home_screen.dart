@@ -6,6 +6,7 @@ import '../widgets/custom_markdown_builder.dart';
 import '../providers/settings_provider.dart';
 import '../services/gemini_service.dart';
 import '../services/openrouter_service.dart';
+import '../services/pollinations_service.dart';
 import '../widgets/prompt_list_widget.dart';
 import 'settings_screen.dart';
 
@@ -22,14 +23,16 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _isLoading = false;
   late GeminiService _geminiService;
   late OpenRouterService _openrouterService;
+  late PollinationsService _pollinationsService;
 
   @override
   void initState() {
     super.initState();
-    // Initialize both services using the provider from initState
+    // Initialize all services using the provider from initState
     final settingsProvider = Provider.of<SettingsProvider>(context, listen: false);
     _geminiService = GeminiService(settings: settingsProvider.settings);
     _openrouterService = OpenRouterService(settings: settingsProvider.openrouterSettings);
+    _pollinationsService = PollinationsService();
   }
 
   @override
@@ -56,9 +59,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
     try {
       String response;
-      // Ensure the correct service instance has the latest settings if they could change
-      // For simplicity now, we assume settings are relatively stable or handled by navigation/restart
-      // A more robust solution might involve updating settings within the existing service instance.
       if (settingsProvider.selectedApiType == ApiType.gemini) {
         if (settingsProvider.settings.apiKey.isEmpty) {
           throw Exception('Gemini API 密钥未设置。请在设置中添加。');
@@ -67,7 +67,7 @@ class _HomeScreenState extends State<HomeScreen> {
           input,
           systemPrompt: _selectedSystemPrompt,
         );
-      } else { // ApiType.openrouter
+      } else if (settingsProvider.selectedApiType == ApiType.openrouter) {
         if (settingsProvider.openrouterSettings.apiKey.isEmpty) {
           throw Exception('OpenRouter API 密钥未设置。请在设置中添加。');
         }
@@ -75,6 +75,13 @@ class _HomeScreenState extends State<HomeScreen> {
           input,
           systemPrompt: _selectedSystemPrompt,
         );
+      } else if (settingsProvider.selectedApiType == ApiType.pollinations) {
+        response = await _pollinationsService.sendMessage(
+          input,
+          systemPrompt: _selectedSystemPrompt,
+        );
+      } else {
+        response = '未识别的API类型';
       }
 
       setState(() {
@@ -368,17 +375,19 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       // Use the existing service instances initialized in initState
       if (settingsProvider.selectedApiType == ApiType.gemini) {
-        // _geminiService = GeminiService(settings: settingsProvider.settings); // REMOVED
         if (settingsProvider.settings.apiKey.isEmpty) {
           throw Exception('Gemini API 密钥未设置。请在设置中添加。');
         }
         response = await _geminiService.regenerateResponse();
-      } else { // ApiType.openrouter
-        // _openrouterService = OpenRouterService(settings: settingsProvider.openrouterSettings); // REMOVED
+      } else if (settingsProvider.selectedApiType == ApiType.openrouter) {
          if (settingsProvider.openrouterSettings.apiKey.isEmpty) {
           throw Exception('OpenRouter API 密钥未设置。请在设置中添加。');
         }
         response = await _openrouterService.regenerateResponse();
+      } else if (settingsProvider.selectedApiType == ApiType.pollinations) {
+        response = await _pollinationsService.regenerateResponse();
+      } else {
+        response = '未识别的API类型';
       }
 
       setState(() {

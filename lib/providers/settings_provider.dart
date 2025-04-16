@@ -4,8 +4,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/gemini_model.dart';
 import '../models/openrouter_model.dart';
 
-// 定义 API 类型枚举
-enum ApiType { gemini, openrouter }
+ // 定义 API 类型枚举
+enum ApiType { gemini, openrouter, pollinations }
 
 class SettingsProvider with ChangeNotifier {
   final GeminiSettings _settings = GeminiSettings();
@@ -22,6 +22,7 @@ class SettingsProvider with ChangeNotifier {
   ThemeMode get themeMode => _themeMode;
   ApiType get selectedApiType => _selectedApiType; // Getter for API type
 
+  // pollinations 不需要 Key，也无需特殊设置
   SettingsProvider() {
     _loadSettings();
   }

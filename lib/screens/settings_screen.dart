@@ -78,6 +78,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         value: ApiType.gemini, label: Text('Gemini')),
                     ButtonSegment<ApiType>(
                         value: ApiType.openrouter, label: Text('OpenRouter')),
+                    ButtonSegment<ApiType>(
+                        value: ApiType.pollinations, label: Text('Pollinations')),
                   ],
                   selected: <ApiType>{settingsProvider.selectedApiType},
                   onSelectionChanged: (Set<ApiType> newSelection) {
@@ -187,6 +189,30 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     },
                   ),
                    const SizedBox(height: 32), // Spacing before next section
+                ],
+
+                // --- Conditional Pollinations Settings ---
+                if (settingsProvider.selectedApiType == ApiType.pollinations) ...[
+                  const Text(
+                    'Pollinations 设置',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 16),
+                  DropdownButtonFormField<String>(
+                    value: 'openai-large', // 仅有一个模型
+                    decoration: const InputDecoration(
+                      labelText: '选择模型',
+                      border: OutlineInputBorder(),
+                    ),
+                    items: const [
+                      DropdownMenuItem(
+                        value: 'openai-large',
+                        child: Text('GPT 4.1 (openai-large)'),
+                      ),
+                    ],
+                    onChanged: null, // 只有一个模型，无法更改
+                  ),
+                  const SizedBox(height: 32),
                 ],
 
                 // --- Theme Settings ---
