@@ -11,8 +11,7 @@
     - Gemini 2.5 Pro
     - Gemini 2.0 Flash Thinking
     - Gemini 2.0 Flash
-  - 集成OpenRouter API，支持多种模型
-    - Gemini 2.5 Pro (Google)
+  - 集成OpenRouter API
     - DeepSeek V3 (DeepSeek)
   - 集成Pollinations API（无需API Key，支持openai-large模型）
 - 提示词管理系统

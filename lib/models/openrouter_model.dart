@@ -12,11 +12,6 @@ class OpenRouterModel {
   static List<OpenRouterModel> getAvailableModels() {
     return [
       OpenRouterModel(
-        id: 'google/gemini-2.5-pro-exp-03-25:free',
-        name: 'Gemini 2.5 Pro',
-        provider: 'Google',
-      ),
-      OpenRouterModel(
         id: 'deepseek/deepseek-chat-v3-0324:free',
         name: 'DeepSeek V3',
         provider: 'DeepSeek',

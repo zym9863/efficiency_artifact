@@ -163,32 +163,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     },
                   ),
                   const SizedBox(height: 16),
-                  // OpenRouter Model Selection
-                  DropdownButtonFormField<String>(
-                    // Ensure the value exists in the items list or handle null/default
-                    value: OpenRouterModel.getAvailableModels().any((m) => m.id == settingsProvider.openrouterSettings.selectedModel.id)
-                           ? settingsProvider.openrouterSettings.selectedModel.id
-                           : OpenRouterModel.getAvailableModels().first.id, // Default to first if saved one isn't valid
+                  TextFormField(
+                    enabled: false,
+                    initialValue: OpenRouterModel.getAvailableModels().first.name,
                     decoration: const InputDecoration(
-                      labelText: '选择 OpenRouter 模型',
+                      labelText: 'OpenRouter 模型',
                       border: OutlineInputBorder(),
                     ),
-                    items: OpenRouterModel.getAvailableModels()
-                        .map((model) => DropdownMenuItem(
-                              value: model.id,
-                              // Consider wrapping long text if needed
-                              child: Text('${model.name} (${model.provider})', overflow: TextOverflow.ellipsis),
-                            ))
-                        .toList(),
-                    onChanged: (String? value) {
-                      if (value != null) {
-                        final model = OpenRouterModel.getAvailableModels()
-                            .firstWhere((model) => model.id == value);
-                        settingsProvider.updateOpenRouterSelectedModel(model);
-                      }
-                    },
                   ),
-                   const SizedBox(height: 32), // Spacing before next section
+                  const SizedBox(height: 32), // Spacing before next section
                 ],
 
                 // --- Conditional Pollinations Settings ---
