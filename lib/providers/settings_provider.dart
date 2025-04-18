@@ -17,10 +17,15 @@ class SettingsProvider with ChangeNotifier {
   ThemeMode _themeMode = ThemeMode.system;
   ApiType _selectedApiType = ApiType.gemini; // 默认选择 Gemini
 
+  // Pollinations模型选择
+  String? _pollinationsSelectedModelId;
+  static const String _pollinationsModelPrefKey = 'pollinations_model_id';
+
   GeminiSettings get settings => _settings;
   OpenRouterSettings get openrouterSettings => _openrouterSettings;
   ThemeMode get themeMode => _themeMode;
   ApiType get selectedApiType => _selectedApiType; // Getter for API type
+  String? get pollinationsSelectedModelId => _pollinationsSelectedModelId;
 
   // pollinations 不需要 Key，也无需特殊设置
   SettingsProvider() {
@@ -56,6 +61,12 @@ class SettingsProvider with ChangeNotifier {
       );
     }
 
+    // Pollinations模型
+    final savedPollinationsModelId = prefs.getString(_pollinationsModelPrefKey);
+    if (savedPollinationsModelId != null) {
+      _pollinationsSelectedModelId = savedPollinationsModelId;
+    }
+
     notifyListeners();
   }
 
@@ -69,6 +80,14 @@ class SettingsProvider with ChangeNotifier {
 
   void updateSelectedModel(GeminiModel model) {
     _settings.selectedModel = model;
+    notifyListeners();
+  }
+
+  // Pollinations模型选择
+  Future<void> updatePollinationsSelectedModelId(String modelId) async {
+    _pollinationsSelectedModelId = modelId;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_pollinationsModelPrefKey, modelId);
     notifyListeners();
   }
 

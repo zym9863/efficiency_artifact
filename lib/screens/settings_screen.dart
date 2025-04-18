@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../models/gemini_model.dart';
 import '../models/openrouter_model.dart';
 import '../providers/settings_provider.dart'; // ApiType is implicitly imported
+import '../services/pollinations_service.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -182,18 +183,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                   const SizedBox(height: 16),
                   DropdownButtonFormField<String>(
-                    value: 'openai-large', // 仅有一个模型
+                    value: settingsProvider.pollinationsSelectedModelId ?? PollinationsModel.getAvailableModels().first.id,
                     decoration: const InputDecoration(
                       labelText: '选择模型',
                       border: OutlineInputBorder(),
                     ),
-                    items: const [
-                      DropdownMenuItem(
-                        value: 'openai-large',
-                        child: Text('GPT 4.1 (openai-large)'),
-                      ),
-                    ],
-                    onChanged: null, // 只有一个模型，无法更改
+                    items: PollinationsModel.getAvailableModels()
+                        .map((model) => DropdownMenuItem(
+                              value: model.id,
+                              child: Text(model.name),
+                            ))
+                        .toList(),
+                    onChanged: (String? value) {
+                      if (value != null) {
+                        settingsProvider.updatePollinationsSelectedModelId(value);
+                      }
+                    },
                   ),
                   const SizedBox(height: 32),
                 ],

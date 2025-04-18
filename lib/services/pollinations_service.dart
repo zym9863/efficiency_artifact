@@ -10,7 +10,7 @@ class PollinationsService {
 
   PollinationsService();
 
-  Future<String> sendMessage(String message, {String? systemPrompt}) async {
+  Future<String> sendMessage(String message, {String? systemPrompt, String modelId = 'openai-large'}) async {
     _lastMessage = message;
     _lastSystemPrompt = systemPrompt;
     try {
@@ -25,7 +25,7 @@ class PollinationsService {
           'Content-Type': 'application/json',
         },
         body: jsonEncode({
-          'model': 'openai-large',
+          'model': modelId,
           'messages': messages,
           'private': true,
         }),
