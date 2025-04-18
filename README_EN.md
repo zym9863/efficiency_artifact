@@ -8,7 +8,7 @@ A Flutter-based AI efficiency tool that integrates both Gemini and OpenRouter AP
 
 - Multiple API Provider Support
   - Gemini API Integration with Multiple Model Support
-    - gemini-2.5-pro-preview-03-25
+    - gemini-2.5-pro-exp-03-25
     - gemini-2.5-flash-preview-04-17
   - OpenRouter API Integration 
     - DeepSeek V3 (DeepSeek)

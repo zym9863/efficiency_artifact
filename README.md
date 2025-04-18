@@ -8,7 +8,7 @@
 
 - 多API提供商支持
   - 集成Gemini API，支持多个模型选择
-    - gemini-2.5-pro-preview-03-25
+    - gemini-2.5-pro-exp-03-25
     - gemini-2.5-flash-preview-04-17
   - 集成OpenRouter API
     - DeepSeek V3 (DeepSeek)
