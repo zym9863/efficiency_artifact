@@ -8,12 +8,14 @@ A Flutter-based AI efficiency tool that integrates both Gemini and OpenRouter AP
 
 - Multiple API Provider Support
   - Gemini API Integration with Multiple Model Support
-    - Gemini 2.5 Pro
-    - Gemini 2.0 Flash Thinking
-    - Gemini 2.0 Flash
+    - gemini-2.5-pro-preview-03-25
+    - gemini-2.5-flash-preview-04-17
   - OpenRouter API Integration 
     - DeepSeek V3 (DeepSeek)
-  - Pollinations API integration (no API key required, supports openai-large model)
+  - Pollinations API integration (no API key required, supports multiple models)
+    - openai-large (GPT 4.1 mini)
+    - openai-reasoning (o4 mini)
+    - gemini (Gemini 2.5 Flash)
 - Prompt Management System
   - Create and save frequently used prompts
   - Manage prompt titles and content

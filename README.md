@@ -8,12 +8,14 @@
 
 - 多API提供商支持
   - 集成Gemini API，支持多个模型选择
-    - Gemini 2.5 Pro
-    - Gemini 2.0 Flash Thinking
-    - Gemini 2.0 Flash
+    - gemini-2.5-pro-preview-03-25
+    - gemini-2.5-flash-preview-04-17
   - 集成OpenRouter API
     - DeepSeek V3 (DeepSeek)
-  - 集成Pollinations API（无需API Key，支持openai-large模型）
+  - 集成Pollinations API（无需API Key，支持多模型）
+    - openai-large（GPT 4.1 mini）
+    - openai-reasoning（o4 mini）
+    - gemini（Gemini 2.5 Flash）
 - 提示词管理系统
   - 支持创建和保存常用提示词
   - 提示词标题和内容管理
