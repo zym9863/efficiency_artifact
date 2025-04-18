@@ -47,3 +47,19 @@ class PollinationsService {
     return sendMessage(_lastMessage!, systemPrompt: _lastSystemPrompt);
   }
 }
+
+// Pollinations 支持的模型列表
+class PollinationsModel {
+  final String id;
+  final String name;
+
+  PollinationsModel({required this.id, required this.name});
+
+  static List<PollinationsModel> getAvailableModels() {
+    return [
+      PollinationsModel(id: 'openai-large', name: 'GPT 4.1 mini'),
+      PollinationsModel(id: 'openai-reasoning', name: 'o4 mini'),
+      PollinationsModel(id: 'gemini', name: 'Gemini 2.5 Flash'),
+    ];
+  }
+}
