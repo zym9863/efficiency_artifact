@@ -140,6 +140,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       }
                     },
                   ),
+                  const SizedBox(height: 16),
+                  // 推理深度选择
+                  DropdownButtonFormField<ReasoningEffort>(
+                    value: settingsProvider.settings.reasoningEffort,
+                    decoration: const InputDecoration(
+                      labelText: '推理深度',
+                      border: OutlineInputBorder(),
+                      helperText: '设置Gemini模型的推理深度，高推理深度可能会产生更详细的回答',
+                    ),
+                    items: ReasoningEffort.values
+                        .map((effort) => DropdownMenuItem(
+                              value: effort,
+                              child: Text('${effort.displayName} (${effort.value})'),
+                            ))
+                        .toList(),
+                    onChanged: (ReasoningEffort? value) {
+                      if (value != null) {
+                        settingsProvider.updateReasoningEffort(value);
+                      }
+                    },
+                  ),
                   const SizedBox(height: 32), // Spacing before next section
                 ],
 

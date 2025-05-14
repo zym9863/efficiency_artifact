@@ -14,6 +14,7 @@ class SettingsProvider with ChangeNotifier {
   static const String _openrouterApiKeyPrefKey = 'openrouter_api_key';
   static const String _themePrefKey = 'theme_mode';
   static const String _apiTypePrefKey = 'api_type'; // 新增 API 类型键名
+  static const String _reasoningEffortPrefKey = 'reasoning_effort'; // 推理深度键名
   ThemeMode _themeMode = ThemeMode.system;
   ApiType _selectedApiType = ApiType.gemini; // 默认选择 Gemini
 
@@ -44,7 +45,7 @@ class SettingsProvider with ChangeNotifier {
     if (savedOpenRouterApiKey.isNotEmpty) {
       _openrouterSettings.apiKey = savedOpenRouterApiKey;
     }
-    
+
     final savedThemeMode = prefs.getString(_themePrefKey);
     if (savedThemeMode != null) {
       _themeMode = ThemeMode.values.firstWhere(
@@ -65,6 +66,21 @@ class SettingsProvider with ChangeNotifier {
     final savedPollinationsModelId = prefs.getString(_pollinationsModelPrefKey);
     if (savedPollinationsModelId != null) {
       _pollinationsSelectedModelId = savedPollinationsModelId;
+    }
+
+    // 加载推理深度设置
+    final savedReasoningEffort = prefs.getString(_reasoningEffortPrefKey);
+    if (savedReasoningEffort != null) {
+      try {
+        final effortEnum = ReasoningEffort.values.firstWhere(
+          (effort) => effort.toString() == savedReasoningEffort,
+          orElse: () => ReasoningEffort.low,
+        );
+        _settings.reasoningEffort = effortEnum;
+      } catch (e) {
+        // 如果解析失败，使用默认值
+        _settings.reasoningEffort = ReasoningEffort.low;
+      }
     }
 
     notifyListeners();
@@ -116,6 +132,14 @@ class SettingsProvider with ChangeNotifier {
     _themeMode = mode;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_themePrefKey, mode.toString());
+    notifyListeners();
+  }
+
+  // 更新推理深度
+  Future<void> updateReasoningEffort(ReasoningEffort effort) async {
+    _settings.reasoningEffort = effort;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_reasoningEffortPrefKey, effort.toString());
     notifyListeners();
   }
 }
