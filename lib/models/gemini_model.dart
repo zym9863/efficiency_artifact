@@ -38,7 +38,7 @@ class GeminiModel {
 
   static List<GeminiModel> getAvailableModels() {
     return [
-      GeminiModel(id: 'gemini-2.5-flash-preview-04-17', name: 'Gemini 2.5 Flash'),
+      GeminiModel(id: 'gemini-2.5-flash-preview-05-20', name: 'Gemini 2.5 Flash'),
     ];
   }
 }
