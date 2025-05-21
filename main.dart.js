@@ -40939,7 +40939,7 @@ A.LK.prototype={
 N(a){var s=t.Wp,r=A.b([A.ay3(new A.aae(),s),A.ay3(new A.aaf(),t.HD)],t.Ds)
 return A.aLs(A.au5(new A.aag(),s),r)}}
 A.aae.prototype={
-$1(a){var s=B.b.gW([new A.ix("gemini-2.5-flash-preview-04-17","Gemini 2.5 Flash")]),r=B.b.gW([new A.LZ("deepseek/deepseek-chat-v3-0324:free","DeepSeek V3")])
+$1(a){var s=B.b.gW([new A.ix("gemini-2.5-flash-preview-05-20","Gemini 2.5 Flash")]),r=B.b.gW([new A.LZ("deepseek/deepseek-chat-v3-0324:free","DeepSeek V3")])
 s=new A.iO(new A.a3K(s,B.hx),new A.aaE(r),B.f7,B.cC,$.af())
 s.xT()
 return s},
@@ -41468,7 +41468,7 @@ if(b.d===B.cC){q=A.qk(!0,B.bk,!1,m,!0,B.C,m,A.wP(),l.d,m,m,m,m,m,2,B.Go,B.W,!0,m
 p=b.a
 o=p.b
 n=t.WO
-o=A.auo(B.Gn,A.a3(new A.Z(A.b([new A.ix("gemini-2.5-flash-preview-04-17","Gemini 2.5 Flash")],t.FX),new A.apR(),n),!0,n.h("al.E")),new A.apS(b),o.a,t.N)
+o=A.auo(B.Gn,A.a3(new A.Z(A.b([new A.ix("gemini-2.5-flash-preview-05-20","Gemini 2.5 Flash")],t.FX),new A.apR(),n),!0,n.h("al.E")),new A.apS(b),o.a,t.N)
 p=p.c
 n=t.Ak
 B.b.O(r,A.b([B.V3,B.bA,q,B.bA,o,B.bA,A.auo(B.Gq,A.a3(new A.Z(B.nv,new A.apT(),n),!0,n.h("al.E")),new A.apU(b),p,t.UW),B.kC],s))}if(b.d===B.e0)B.b.O(r,A.b([B.V0,B.bA,A.qk(!0,B.bk,!1,m,!0,B.C,m,A.wP(),l.e,m,m,m,m,m,2,B.Gu,B.W,!0,m,!0,m,!1,m,B.bd,m,m,m,m,m,m,m,1,m,m,!0,"\u2022",m,new A.apV(b),m,m,m,!1,m,m,!1,m,!0,m,B.c1,m,m,B.ba,B.b_,m,m,m,m,m,m,m,!0,B.a6,m,B.c8,m,m,m,m),B.bA,A.aNT(B.Gs,!1,B.b.gW([new A.LZ("deepseek/deepseek-chat-v3-0324:free","DeepSeek V3")]).b),B.kC],s))
@@ -41509,7 +41509,7 @@ $1(a){var s=null
 return A.aup(A.d7(a.b,s,s,s,s,s,s),a.a,t.N)},
 $S:518}
 A.apS.prototype={
-$1(a){var s=B.b.ve(A.b([new A.ix("gemini-2.5-flash-preview-04-17","Gemini 2.5 Flash")],t.FX),new A.apL(a)),r=this.a
+$1(a){var s=B.b.ve(A.b([new A.ix("gemini-2.5-flash-preview-05-20","Gemini 2.5 Flash")],t.FX),new A.apL(a)),r=this.a
 r.a.b=s
 r.ac()},
 $S:96}
