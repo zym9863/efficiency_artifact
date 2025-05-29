@@ -1,0 +1,183 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*'  # 当推送以 v 开头的标签时触发
+  workflow_dispatch:  # 允许手动触发
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            platform: windows
+            artifact-name: efficiency-artifact-windows
+          - os: ubuntu-latest
+            platform: android
+            arch: arm64-v8a
+            artifact-name: efficiency-artifact-android-arm64
+          - os: ubuntu-latest
+            platform: android
+            arch: armeabi-v7a
+            artifact-name: efficiency-artifact-android-arm32
+          - os: ubuntu-latest
+            platform: android
+            arch: x86_64
+            artifact-name: efficiency-artifact-android-x64
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Java (Android only)
+        if: matrix.platform == 'android'
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.4'
+          channel: 'stable'
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Generate app icons
+        run: flutter pub run flutter_launcher_icons
+
+      - name: Build Windows app
+        if: matrix.platform == 'windows'
+        run: |
+          flutter config --enable-windows-desktop
+          flutter build windows --release
+
+      - name: Build Android APK (arm64-v8a)
+        if: matrix.platform == 'android' && matrix.arch == 'arm64-v8a'
+        run: |
+          flutter build apk --release --target-platform android-arm64
+
+      - name: Build Android APK (armeabi-v7a)
+        if: matrix.platform == 'android' && matrix.arch == 'armeabi-v7a'
+        run: |
+          flutter build apk --release --target-platform android-arm
+
+      - name: Build Android APK (x86_64)
+        if: matrix.platform == 'android' && matrix.arch == 'x86_64'
+        run: |
+          flutter build apk --release --target-platform android-x64
+
+      - name: Create Windows artifact directory
+        if: matrix.platform == 'windows'
+        shell: powershell
+        run: |
+          $sourceDir = "build/windows/x64/runner/Release"
+          $targetDir = "release-windows"
+          New-Item -ItemType Directory -Force -Path $targetDir
+          Copy-Item -Path "$sourceDir/*" -Destination $targetDir -Recurse
+          Compress-Archive -Path $targetDir -DestinationPath "efficiency-artifact-windows.zip"
+
+      - name: Prepare Android APK (arm64-v8a)
+        if: matrix.platform == 'android' && matrix.arch == 'arm64-v8a'
+        run: |
+          mkdir -p release-android
+          cp build/app/outputs/flutter-apk/app-release.apk release-android/efficiency-artifact-android-arm64.apk
+
+      - name: Prepare Android APK (armeabi-v7a)
+        if: matrix.platform == 'android' && matrix.arch == 'armeabi-v7a'
+        run: |
+          mkdir -p release-android
+          cp build/app/outputs/flutter-apk/app-release.apk release-android/efficiency-artifact-android-arm32.apk
+
+      - name: Prepare Android APK (x86_64)
+        if: matrix.platform == 'android' && matrix.arch == 'x86_64'
+        run: |
+          mkdir -p release-android
+          cp build/app/outputs/flutter-apk/app-release.apk release-android/efficiency-artifact-android-x64.apk
+
+      - name: Upload Windows artifact
+        if: matrix.platform == 'windows'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact-name }}
+          path: efficiency-artifact-windows.zip
+
+      - name: Upload Android artifact (arm64-v8a)
+        if: matrix.platform == 'android' && matrix.arch == 'arm64-v8a'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact-name }}
+          path: release-android/efficiency-artifact-android-arm64.apk
+
+      - name: Upload Android artifact (armeabi-v7a)
+        if: matrix.platform == 'android' && matrix.arch == 'armeabi-v7a'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact-name }}
+          path: release-android/efficiency-artifact-android-arm32.apk
+
+      - name: Upload Android artifact (x86_64)
+        if: matrix.platform == 'android' && matrix.arch == 'x86_64'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact-name }}
+          path: release-android/efficiency-artifact-android-x64.apk
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+
+      - name: Get version from tag
+        id: version
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/}
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.version.outputs.version }}
+          name: Release ${{ steps.version.outputs.version }}
+          body: |
+            ## 🚀 Release ${{ steps.version.outputs.version }}
+            
+            ### 📦 下载
+            - **Windows**: efficiency-artifact-windows.zip
+            - **Android ARM64 (推荐)**: efficiency-artifact-android-arm64.apk
+            - **Android ARM32**: efficiency-artifact-android-arm32.apk  
+            - **Android x64**: efficiency-artifact-android-x64.apk
+            
+            ### 📋 架构说明
+            - **ARM64 (arm64-v8a)**: 适用于大多数现代 Android 设备，推荐下载
+            - **ARM32 (armeabi-v7a)**: 适用于较老的 32 位 ARM 设备
+            - **x64 (x86_64)**: 适用于 x86_64 架构的 Android 设备（如模拟器）
+            
+            ### ✨ 更新内容
+            - 请在此处添加更新说明
+            
+            ### 📋 系统要求
+            - **Windows**: Windows 10 或更高版本
+            - **Android**: Android 5.0 (API 21) 或更高版本
+          files: |
+            efficiency-artifact-windows/efficiency-artifact-windows.zip
+            efficiency-artifact-android-arm64/efficiency-artifact-android-arm64.apk
+            efficiency-artifact-android-arm32/efficiency-artifact-android-arm32.apk
+            efficiency-artifact-android-x64/efficiency-artifact-android-x64.apk
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
