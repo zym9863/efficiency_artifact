@@ -185,13 +185,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     },
                   ),
                   const SizedBox(height: 16),
-                  TextFormField(
-                    enabled: false,
-                    initialValue: OpenRouterModel.getAvailableModels().first.name,
+                  DropdownButtonFormField<String>(
+                    value: settingsProvider.openrouterSettings.selectedModel.id,
                     decoration: const InputDecoration(
-                      labelText: 'OpenRouter 模型',
+                      labelText: '选择 OpenRouter 模型',
                       border: OutlineInputBorder(),
                     ),
+                    items: OpenRouterModel.getAvailableModels()
+                        .map((model) => DropdownMenuItem(
+                              value: model.id,
+                              child: Text(model.name),
+                            ))
+                        .toList(),
+                    onChanged: (String? value) {
+                      if (value != null) {
+                        final model = OpenRouterModel.getAvailableModels()
+                            .firstWhere((model) => model.id == value);
+                        settingsProvider.updateOpenRouterSelectedModel(model);
+                      }
+                    },
                   ),
                   const SizedBox(height: 32), // Spacing before next section
                 ],

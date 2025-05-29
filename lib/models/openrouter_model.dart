@@ -15,7 +15,12 @@ class OpenRouterModel {
         id: 'deepseek/deepseek-chat-v3-0324:free',
         name: 'DeepSeek V3',
         provider: 'DeepSeek',
-      )
+      ),
+      OpenRouterModel(
+        id: 'deepseek/deepseek-r1-0528:free',
+        name: 'DeepSeek R1',
+        provider: 'DeepSeek',
+      ),
     ];
   }
 }

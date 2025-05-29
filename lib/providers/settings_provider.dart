@@ -12,6 +12,7 @@ class SettingsProvider with ChangeNotifier {
   final OpenRouterSettings _openrouterSettings = OpenRouterSettings();
   static const String _apiKeyPrefKey = 'gemini_api_key';
   static const String _openrouterApiKeyPrefKey = 'openrouter_api_key';
+  static const String _openrouterModelPrefKey = 'openrouter_model_id';
   static const String _themePrefKey = 'theme_mode';
   static const String _apiTypePrefKey = 'api_type'; // 新增 API 类型键名
   static const String _reasoningEffortPrefKey = 'reasoning_effort'; // 推理深度键名
@@ -44,6 +45,19 @@ class SettingsProvider with ChangeNotifier {
     final savedOpenRouterApiKey = prefs.getString(_openrouterApiKeyPrefKey) ?? '';
     if (savedOpenRouterApiKey.isNotEmpty) {
       _openrouterSettings.apiKey = savedOpenRouterApiKey;
+    }
+
+    // 加载 OpenRouter 选中的模型
+    final savedOpenRouterModelId = prefs.getString(_openrouterModelPrefKey);
+    if (savedOpenRouterModelId != null) {
+      try {
+        final model = OpenRouterModel.getAvailableModels()
+            .firstWhere((model) => model.id == savedOpenRouterModelId);
+        _openrouterSettings.selectedModel = model;
+      } catch (e) {
+        // 如果找不到保存的模型，使用默认模型
+        _openrouterSettings.selectedModel = OpenRouterModel.getAvailableModels().first;
+      }
     }
 
     final savedThemeMode = prefs.getString(_themePrefKey);
@@ -114,8 +128,10 @@ class SettingsProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void updateOpenRouterSelectedModel(OpenRouterModel model) {
+  Future<void> updateOpenRouterSelectedModel(OpenRouterModel model) async {
     _openrouterSettings.selectedModel = model;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_openrouterModelPrefKey, model.id);
     notifyListeners();
   }
 
