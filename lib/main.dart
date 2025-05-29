@@ -39,7 +39,7 @@ class MyApp extends StatelessWidget {
                 fontWeight: FontWeight.w500,
               ),
             ),
-            cardTheme: CardTheme(
+            cardTheme: CardThemeData(
               elevation: 1.0,
               margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
               shape: RoundedRectangleBorder(
@@ -68,7 +68,7 @@ class MyApp extends StatelessWidget {
                 fontWeight: FontWeight.w500,
               ),
             ),
-            cardTheme: CardTheme(
+            cardTheme: CardThemeData(
               elevation: 1.0,
               margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
               shape: RoundedRectangleBorder(
