@@ -11,6 +11,7 @@ class SettingsProvider with ChangeNotifier {
   final GeminiSettings _settings = GeminiSettings();
   final OpenRouterSettings _openrouterSettings = OpenRouterSettings();
   static const String _apiKeyPrefKey = 'gemini_api_key';
+  static const String _geminiModelPrefKey = 'gemini_model_id'; // Gemini模型持久化键名
   static const String _openrouterApiKeyPrefKey = 'openrouter_api_key';
   static const String _openrouterModelPrefKey = 'openrouter_model_id';
   static const String _themePrefKey = 'theme_mode';
@@ -40,6 +41,19 @@ class SettingsProvider with ChangeNotifier {
     final savedApiKey = prefs.getString(_apiKeyPrefKey) ?? '';
     if (savedApiKey.isNotEmpty) {
       _settings.apiKey = savedApiKey;
+    }
+
+    // 加载 Gemini 选中的模型
+    final savedGeminiModelId = prefs.getString(_geminiModelPrefKey);
+    if (savedGeminiModelId != null) {
+      try {
+        final model = GeminiModel.getAvailableModels()
+            .firstWhere((model) => model.id == savedGeminiModelId);
+        _settings.selectedModel = model;
+      } catch (e) {
+        // 如果找不到保存的模型，使用默认模型
+        _settings.selectedModel = GeminiModel.getAvailableModels().first;
+      }
     }
 
     final savedOpenRouterApiKey = prefs.getString(_openrouterApiKeyPrefKey) ?? '';
@@ -108,8 +122,10 @@ class SettingsProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void updateSelectedModel(GeminiModel model) {
+  Future<void> updateSelectedModel(GeminiModel model) async {
     _settings.selectedModel = model;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_geminiModelPrefKey, model.id);
     notifyListeners();
   }
 

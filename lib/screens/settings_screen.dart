@@ -132,11 +132,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               child: Text(model.name),
                             ))
                         .toList(),
-                    onChanged: (String? value) {
+                    onChanged: (String? value) async {
                       if (value != null) {
                         final model = GeminiModel.getAvailableModels()
                             .firstWhere((model) => model.id == value);
-                        settingsProvider.updateSelectedModel(model);
+                        await settingsProvider.updateSelectedModel(model);
                       }
                     },
                   ),
